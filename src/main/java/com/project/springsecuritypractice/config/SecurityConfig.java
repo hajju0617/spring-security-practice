@@ -14,11 +14,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         // throws Exception 적는 이유 : authorizeHttpRequests, build가 예외를 던지고 있음.
         httpSecurity
+                .csrf((csrf) -> csrf.disable()
+                )
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/", "/login").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
+                )
+                .formLogin((formLogin) -> formLogin
+                        .loginPage("/login").loginProcessingUrl("/loginProc").permitAll()
                 );
 
         return httpSecurity.build();
