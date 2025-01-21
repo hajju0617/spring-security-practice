@@ -2,9 +2,17 @@ package com.project.springsecuritypractice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -30,8 +38,41 @@ public class SecurityConfig {
                 )
                 // 권한이 필요한 URL 요청 시 /login으로 리다이렉트 시킴.
                 .formLogin((formLogin) -> formLogin
-                        .loginPage("/login").loginProcessingUrl("/loginProc").permitAll()
+                                .loginPage("/login").loginProcessingUrl("/loginProc").permitAll()
+
+//                .httpBasic(Customizer.withDefaults()      // http basic 인증 방식.
                 );
+
+
         return httpSecurity.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+
+        UserDetails user1 = User.builder()
+                .username("userA")
+                .password(bCryptPasswordEncoder().encode("user1"))
+                .roles("USER")
+                .build();
+
+        UserDetails user2 = User.builder()
+                .username("userB")
+                .password(bCryptPasswordEncoder().encode("user2"))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user1, user2);
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+
+        return RoleHierarchyImpl.fromHierarchy(
+                """
+                ROLE_C > ROLE_B
+                ROLE_B > ROLE_A
+                """
+        );
     }
 }
