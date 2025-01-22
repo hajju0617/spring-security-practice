@@ -3,11 +3,12 @@ package com.project.springsecuritypractice.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,9 +44,20 @@ public class SecurityConfig {
 //                .httpBasic(Customizer.withDefaults()      // http basic 인증 방식.
                 );
 
+//        httpSecurity.securityMatcher("/")
+//                .authorizeHttpRequests((authorize) -> authorize
+//                .requestMatchers("/").permitAll());
 
         return httpSecurity.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain filterChain2(HttpSecurity httpSecurity) throws Exception{
+//        httpSecurity.securityMatcher("/admin")
+//                .authorizeHttpRequests((authorize) -> authorize
+//                .requestMatchers("/admin").authenticated());
+//        return httpSecurity.build();
+//    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -65,14 +77,15 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user1, user2);
     }
 
-    @Bean
-    public RoleHierarchy roleHierarchy() {
+//    @Bean
+//    public RoleHierarchy roleHierarchy() {
+//
+//        return RoleHierarchyImpl.fromHierarchy(
+//                """
+//                ROLE_C > ROLE_B
+//                ROLE_B > ROLE_A
+//                """
+//        );
+//    }
 
-        return RoleHierarchyImpl.fromHierarchy(
-                """
-                ROLE_C > ROLE_B
-                ROLE_B > ROLE_A
-                """
-        );
-    }
 }
